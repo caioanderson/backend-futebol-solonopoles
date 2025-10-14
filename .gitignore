@@ -1,0 +1,4 @@
+node_modules
+db/app.sqlite3
+.DS_Store
+.env
