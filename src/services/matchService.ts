@@ -13,20 +13,46 @@ export async function getAllMatches() {
 
 export async function createMatch(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { location, match_date, stage, team_a_id, team_b_id } = createMatchBodySchema.parse(request.body)
+    const { location, match_date, team_a_id, team_b_id } = createMatchBodySchema.parse(request.body)
+
     const [teamA, teamB] = await Promise.all([
-      knex('teams').select('group_id').where('id', team_a_id).first(),
-      knex('teams').select('group_id').where('id', team_b_id).first(),
+      knex('teams').select('group_id', 'championship_id').where('id', team_a_id).first(),
+      knex('teams').select('group_id', 'championship_id').where('id', team_b_id).first(),
     ])
+
     if (!teamA || !teamB) {
       return reply.status(400).send({ message: 'One or both teams do not exist.' })
     }
-    if (stage === 'group' && teamA.group_id !== teamB.group_id) {
-      return reply.status(400).send({
-        message: 'In the group stage, both teams must belong to the same group',
-      })
+
+    // Garante que ambos pertencem ao mesmo campeonato
+    if (teamA.championship_id !== teamB.championship_id) {
+      return reply.status(400).send({ message: 'Teams must belong to the same championship.' })
     }
-    const group_id = stage === 'group' ? teamA.group_id : null
+
+    // Busca o campeonato pra saber a fase atual
+    const championship = await knex('championship')
+      .select('current_stage')
+      .where('id', teamA.championship_id)
+      .first()
+
+    if (!championship) {
+      return reply.status(404).send({ message: 'Championship not found.' })
+    }
+
+    const stage = championship.current_stage
+    let group_id: string | null = null
+
+    // Regras específicas para fase de grupos
+    if (stage === 'group') {
+      if (teamA.group_id !== teamB.group_id) {
+        return reply.status(400).send({
+          message: 'In the group stage, both teams must belong to the same group.',
+        })
+      }
+      group_id = teamA.group_id
+    }
+
+    // Cria a partida
     await knex('matches').insert({
       id: crypto.randomUUID(),
       group_id,
@@ -36,7 +62,8 @@ export async function createMatch(request: FastifyRequest, reply: FastifyReply) 
       location,
       stage,
     })
-    return reply.status(201).send()
+
+    return reply.status(201).send({ message: 'Match created successfully.' })
   } catch (error) {
     formatErrorResponse(error, reply)
   }

@@ -3,16 +3,17 @@ import { Knex } from 'knex'
 
 declare module 'knex/types/tables' {
   interface Championship {
-    id: string,
-    name: string,
+    id: string
+    name: string
     year: number
+    current_stage: 'group' | 'round_of_16' |'quarterfinal' | 'semifinal' | 'final' | 'finished',
     created_at: string
   }
 
   interface Groups {
-    id: string,
-    name: string,
-    championship_id: string,
+    id: string
+    name: string
+    championship_id: string
     created_at: string
   }
 
@@ -69,7 +70,7 @@ declare module 'knex/types/tables' {
     team: Team
     player: Player
     match: Match
-    match_event: MatchEvent,
+    match_event: MatchEvent
     standings: Standings
   }
 }
