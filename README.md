@@ -20,7 +20,7 @@ Este projeto é uma API desenvolvida em **Node.js**, utilizando **TypeScript** e
 ### 1. Clonar o repositório
 ```bash
 git clone https://github.com/seu-usuario/backend-futebol-solonopoles.git
-cd seu-repositorio
+cd backend-futebol-solonopoles
 ```
 
 ### 2. Instalar dependencias

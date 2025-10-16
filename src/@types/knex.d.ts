@@ -2,16 +2,17 @@
 import { Knex } from 'knex'
 
 declare module 'knex/types/tables' {
-  interface Schedule {
-    id: string
-    team_home: string
-    team_away: string
-    date: string
-    hour: string
-    location: string
-    team_home_score: number
-    team_away_score: number
-    is_finished: boolean
+  interface Championship {
+    id: string,
+    name: string,
+    year: number
+    created_at: string
+  }
+
+  interface Groups {
+    id: string,
+    name: string,
+    championship_id: string,
     created_at: string
   }
 
@@ -28,10 +29,48 @@ declare module 'knex/types/tables' {
     created_at: string
   }
 
+  interface Match {
+    id: string
+    group_id: string
+    team_a_id: string
+    team_b_id: string
+    team_a_score: number
+    team_b_score: number
+    match_date: string
+    location: string
+    stage: string
+    created_at: string
+  }
+
+  interface MatchEvent {
+    id: string
+    match_id: string
+    player_id: string
+    team_id: string
+    type: 'goal'| 'assist'| 'yellow_card'| 'red_card'
+  }
+
+  interface Standings {
+    id: string
+    group_id: string
+    team_id: team.id
+    points: number
+    wins: number
+    draws: number
+    losses: number
+    goals_for: number
+    goals_against: number
+    goal_difference: number
+  }
+
   export interface Tables {
-    schedule: Schedule
+    championship: Championship
+    groups: Groups
     team: Team
     player: Player
+    match: Match
+    match_event: MatchEvent,
+    standings: Standings
   }
 }
 

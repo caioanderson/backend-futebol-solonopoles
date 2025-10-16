@@ -1,18 +1,23 @@
 
 import { FastifyReply } from 'fastify'
 import { ZodError } from 'zod'
-import { ZodIssue } from 'zod/v3'
 
 export function formatErrorResponse(errors: ZodError | unknown, reply: FastifyReply) {
   if (errors instanceof ZodError) {
-    const errorsMessage = JSON.parse(errors.message)
-    const errorsFormatted = errorsMessage.map((err: ZodIssue) => {
-      return { field: err.path[0], message: err.message }
-    })
+    const errorsFormatted = errors.issues.map((issue) => ({
+      field: issue.path[0],
+      message: issue.message,
+    }))
 
     return reply.status(422).send({
       message: 'Validation failed',
       errors: errorsFormatted,
+    })
+  }
+
+  if (errors instanceof Error) {
+    return reply.status(400).send({
+      message: errors.message || 'Bad request',
     })
   }
 

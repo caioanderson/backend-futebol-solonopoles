@@ -17,6 +17,7 @@ export default defineConfig([
       'comma-dangle': ['error', 'always-multiline'],
       // 'no-console': 'warn',
       'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
+
       indent: ['error', 2],
       'no-unused-vars': 'warn',
       'no-var': 'error',
