@@ -1,8 +1,10 @@
 import { FastifyInstance } from 'fastify'
-import { createMatchEvent, getAllMatches } from '../services/matchService'
+import { createMatch, createMatchEvent, getAllMatches } from '../services/matchService'
 
 export function matchRoutes(app: FastifyInstance) {
   app.get('/', getAllMatches)
+
+  app.post('/', createMatch)
 
   app.put('/:id/score', (request, reply) => createMatchEvent(request, reply, 'goal'))
 
